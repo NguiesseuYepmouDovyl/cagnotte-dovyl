@@ -1,4 +1,4 @@
-// Espace Dovyl : vérifier, valider ou refuser les contributions
+// Espace Dovyl : les inscriptions comptent d'office, Dovyl retire ou supprime les fausses
 (function () {
   const { rpc, fcfa, nombre, eur, versFcfa, echapper, dateRelative, toast, objectif } = window.Outils;
   const MOYENS = { carte: 'Carte bancaire', appli: 'Appli de transfert', orange_money: 'Orange Money', autre: 'Autre' };
@@ -7,7 +7,7 @@
 
   let code = null;
   let toutes = [];
-  let filtre = 'en_attente';
+  let filtre = 'validee';
 
   const lire = () => { try { return sessionStorage.getItem(CLE); } catch (e) { return null; } };
   const ecrire = (v) => { try { v ? sessionStorage.setItem(CLE, v) : sessionStorage.removeItem(CLE); } catch (e) {} };
@@ -60,20 +60,24 @@
     const total = toutes.filter((c) => c.statut === 'validee').reduce((s, c) => s + c.montant, 0) / 100;
     const compte = (s) => toutes.filter((c) => c.statut === s).length;
     $('#r-total').textContent = eur(total);
-    $('#r-attente').textContent = nombre(compte('en_attente'));
+    $('#r-nombre').textContent = nombre(compte('validee'));
     $('#r-objectif').textContent = `${Math.min(100, Math.round((total / objectif()) * 100))} %`;
     ['en_attente', 'validee', 'rejetee'].forEach((s) => ($(`#c-${s}`).textContent = `(${compte(s)})`));
-    $('#aide-filtre').hidden = filtre !== 'en_attente';
+    // Onglet « À vérifier » : seulement s'il reste d'anciennes inscriptions en attente
+    $('#onglet-attente').hidden = compte('en_attente') === 0 && filtre !== 'en_attente';
+    $('#aide-filtre').hidden = filtre !== 'validee';
 
     const liste = toutes.filter((c) => c.statut === filtre);
     $('#vide').hidden = liste.length > 0;
+    const btnSupprimer = (id) => `<button class="btn btn-refuser btn-petit" data-action="supprimer" data-id="${id}" type="button"><svg class="ic"><use href="#i-corbeille"/></svg>Supprimer</button>`;
     $('#liste').innerHTML = liste.map((c) => {
       const actions = {
-        en_attente: `<button class="btn btn-valider btn-petit" data-action="validee" data-id="${c.id}" type="button"><svg class="ic"><use href="#i-ok"/></svg>Valider</button>
-                     <button class="btn btn-refuser btn-petit" data-action="rejetee" data-id="${c.id}" type="button"><svg class="ic"><use href="#i-non"/></svg>Refuser</button>`,
-        validee: `<button class="btn btn-discret btn-petit" data-action="en_attente" data-id="${c.id}" type="button"><svg class="ic"><use href="#i-retour"/></svg>Remettre à vérifier</button>`,
-        rejetee: `<button class="btn btn-discret btn-petit" data-action="en_attente" data-id="${c.id}" type="button"><svg class="ic"><use href="#i-retour"/></svg>Remettre à vérifier</button>
-                  <button class="btn btn-refuser btn-petit" data-action="supprimer" data-id="${c.id}" type="button"><svg class="ic"><use href="#i-corbeille"/></svg>Supprimer</button>`,
+        en_attente: `<button class="btn btn-valider btn-petit" data-action="validee" data-id="${c.id}" type="button"><svg class="ic"><use href="#i-ok"/></svg>Compter</button>
+                     <button class="btn btn-refuser btn-petit" data-action="rejetee" data-id="${c.id}" type="button"><svg class="ic"><use href="#i-non"/></svg>Retirer</button>`,
+        validee: `<button class="btn btn-discret btn-petit" data-action="rejetee" data-id="${c.id}" type="button"><svg class="ic"><use href="#i-non"/></svg>Retirer du compteur</button>
+                  ${btnSupprimer(c.id)}`,
+        rejetee: `<button class="btn btn-discret btn-petit" data-action="validee" data-id="${c.id}" type="button"><svg class="ic"><use href="#i-retour"/></svg>Remettre dans le compteur</button>
+                  ${btnSupprimer(c.id)}`,
       }[c.statut];
       return `<li class="contrib ${c.statut}">
         <span class="contrib-nom">${echapper(c.nom)}${c.anonyme ? ' <em>(affiché Anonyme)</em>' : ''}</span>
@@ -109,7 +113,7 @@
         ? await rpc('admin_supprimer', { p_code: code, p_id: id })
         : await rpc('admin_statuer', { p_code: code, p_id: id, p_statut: action });
       if (!ok) return sessionExpiree();
-      toast({ validee: 'Contribution validée', rejetee: 'Contribution refusée', en_attente: 'Remise à vérifier', supprimer: 'Inscription supprimée' }[action]);
+      toast({ validee: 'Contribution remise dans le compteur', rejetee: 'Contribution retirée du compteur', en_attente: 'Remise à vérifier', supprimer: 'Inscription supprimée' }[action]);
       await charger();
     } catch (ex) { toast(ex.message, 'erreur'); b.disabled = false; }
   });
@@ -122,7 +126,7 @@
     try {
       const ok = await rpc('admin_ajouter', { p_code: code, p_nom: f.nom.value.trim(), p_anonyme: f.anonyme.checked, p_montant: montant, p_message: f.message.value.trim() });
       if (!ok) return sessionExpiree();
-      f.reset(); toast('Contribution ajoutée et validée'); await charger();
+      f.reset(); toast('Contribution ajoutée au compteur'); await charger();
     } catch (ex) { toast(ex.message, 'erreur'); }
   });
 

@@ -322,17 +322,17 @@ code { font: 700 .95em ui-monospace, Consolas, monospace; background: var(--pale
 .mini-etapes { margin: 0 0 16px; padding-left: 1.3em; display: grid; gap: 6px; }
 .mini-etapes li::marker { font-weight: 700; color: var(--cobalt); }
 
-.services { display: grid; gap: 10px; }
+.services { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px; }
 .service {
-  display: grid; grid-template-columns: 1fr auto; gap: 0 10px; align-items: center;
-  padding: 14px 16px; border-radius: 14px; text-decoration: none;
+  display: grid; grid-template-columns: 1fr auto; gap: 2px 6px; align-items: start;
+  padding: 10px 12px; border-radius: 12px; text-decoration: none;
   background: var(--orange); color: var(--encre); box-shadow: 0 4px 0 var(--orange-fonce);
 }
 .service:hover { background: #FF8A1F; }
 .service:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--orange-fonce); }
-.service .ic { grid-column: 2; grid-row: 1 / 3; }
-.service-nom { font: 800 1.4rem/1.05 var(--f-titre); }
-.service-desc { font-size: .9rem; }
+.service .ic { grid-column: 2; grid-row: 1; width: 16px; height: 16px; }
+.service-nom { font: 800 1.12rem/1.05 var(--f-titre); }
+.service-desc { grid-column: 1 / -1; font-size: .78rem; line-height: 1.25; }
 
 .beneficiaire { margin-top: 16px; padding: 16px; border-radius: 14px; background: var(--encre); color: var(--blanc); }
 .beneficiaire-titre { margin: 0 0 8px; font: 800 1.25rem/1 var(--f-titre); color: var(--citron); }
@@ -353,7 +353,11 @@ code { font: 700 .95em ui-monospace, Consolas, monospace; background: var(--pale
   .moyens { grid-template-columns: repeat(3, 1fr); }
   .moyen { grid-template-columns: 1fr; grid-template-rows: auto; gap: 6px; padding: 16px; }
   .moyen .ic { grid-row: auto; }
-  .services { grid-template-columns: 1fr 1fr; }
+  .services { gap: 10px; }
+  .service { grid-template-columns: 1fr auto; gap: 0 10px; align-items: center; padding: 14px 16px; border-radius: 14px; }
+  .service .ic { grid-row: 1 / 3; width: auto; height: auto; }
+  .service-nom { font-size: 1.4rem; }
+  .service-desc { grid-column: 1; font-size: .9rem; }
 }
 
 /* ---------- Toast ---------- */

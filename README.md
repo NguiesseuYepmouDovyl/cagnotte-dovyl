@@ -3,10 +3,10 @@
 Cagnotte en ligne pour s'offrir une PS5 et GTA VI. Les contributeurs choisissent un montant en euros, puis la façon de payer :
 
 - **Carte bancaire** : via le site Western Union (sans appli), ou directement sur la page si un lien de paiement Notch Pay est configuré.
-- **Appli de transfert** : Taptap Send ou Remitly, vers Orange Money Cameroun.
-- **Orange Money** : pour les personnes au Cameroun, avec le code USSD pré-rempli.
+- **Appli de transfert** : Revolut, Taptap Send, Orange Money Europe, Remitly, WorldRemit ou Ria, vers Orange Money Cameroun (liste réglable dans `assets/config.js`).
+- **Orange Money** : pour les personnes au Cameroun, avec le code USSD pré-rempli, ou depuis l'appli d'une banque camerounaise (Ecobank, UBA…).
 
-Chacun inscrit ensuite son nom au tableau d'honneur. L'inscription reste en attente jusqu'à ce que Dovyl la valide dans l'espace admin, après avoir vu l'argent arriver.
+Chacun inscrit ensuite son nom au tableau d'honneur, et sa contribution compte tout de suite. Le site ne peut pas voir les paiements eux-mêmes : Dovyl compare avec ses SMS Orange Money et retire ou supprime dans l'espace admin les inscriptions sans argent derrière.
 
 ![Aperçu](assets/apercu.png)
 
@@ -15,7 +15,7 @@ Chacun inscrit ensuite son nom au tableau d'honneur. L'inscription reste en atte
 | Fichier | Rôle |
 |---|---|
 | `index.html` | Page publique : compteur, piste à paliers, choix du paiement, tableau d'honneur |
-| `admin.html` | Espace Dovyl : valider ou refuser les inscriptions, ajouter une contribution, changer le code |
+| `admin.html` | Espace Dovyl : retirer ou supprimer une inscription, ajouter une contribution, changer le code |
 | `assets/config.js` | **Tous les réglages** : numéro, nom du bénéficiaire, prix, lien de paiement par carte |
 | `assets/app.js`, `assets/admin.js` | Logique des deux pages |
 

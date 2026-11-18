@@ -20,9 +20,13 @@
   $$('.num-intl').forEach((el) => (el.textContent = `+237 ${num.slice(0, 3)} ${num.slice(3, 5)} ${num.slice(5, 7)} ${num.slice(7)}`));
   $$('.num-local').forEach((el) => (el.textContent = telLisible(num)));
   $$('.nom-benef').forEach((el) => (el.textContent = C.nomBeneficiaire));
-  $('#btn-wu').href = C.services.westernUnion;
-  $('#lien-taptap').href = C.services.taptap;
-  $('#lien-remitly').href = C.services.remitly;
+  $('#btn-wu').href = C.westernUnion;
+  $('#services').innerHTML = C.applis.map((a) =>
+    `<a class="service" href="${echapper(a.lien)}" target="_blank" rel="noopener">
+      <span class="service-nom">${echapper(a.nom)}</span>
+      <span class="service-desc">${echapper(a.desc)}</span>
+      <svg class="ic" aria-hidden="true"><use href="#i-externe"/></svg>
+    </a>`).join('');
   $('#lien-contact-pied').href = lienContact('Salut Dovyl, je viens de voir ta cagnotte PS5 + GTA VI.');
   if (C.lienCarte) { $('#carte-direct').hidden = false; $('#carte-wu').hidden = true; $('#btn-carte').href = C.lienCarte; }
 
@@ -218,6 +222,7 @@
       $('#btn-prevenir').href = lienContact(
         `Salut Dovyl, je viens d'envoyer ${eur(centimes / 100)} ${via} pour ta cagnotte PS5 + GTA VI.` +
         `\nPseudo : ${nom}${ref ? `\nRéférence : ${ref}` : ''}`);
+      charger(); // le compteur et le tableau se mettent à jour tout de suite
       form.hidden = true;
       const merci = $('#merci');
       merci.hidden = false; merci.focus();

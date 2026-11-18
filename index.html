@@ -100,12 +100,12 @@
               <button type="button" class="moyen" role="radio" aria-checked="false" data-moyen="appli">
                 <svg class="ic" aria-hidden="true"><use href="#i-appli"/></svg>
                 <span class="moyen-nom">Appli de transfert</span>
-                <span class="moyen-desc">Taptap Send, Remitly</span>
+                <span class="moyen-desc">Revolut, Taptap Send…</span>
               </button>
               <button type="button" class="moyen" role="radio" aria-checked="false" data-moyen="orange_money">
                 <svg class="ic" aria-hidden="true"><use href="#i-tel"/></svg>
                 <span class="moyen-nom">Orange Money</span>
-                <span class="moyen-desc">Depuis le Cameroun</span>
+                <span class="moyen-desc">Cameroun ou banque</span>
               </button>
             </div>
 
@@ -133,18 +133,8 @@
             <!-- Appli de transfert -->
             <div class="panneau" id="p-appli" hidden>
               <p class="panneau-intro">Dans l'appli, envoyez vers le <strong>Cameroun</strong>, mode <strong>Orange Money</strong>. Vous payez par carte ou par virement, l'argent arrive en quelques minutes.</p>
-              <div class="services">
-                <a class="service" id="lien-taptap" href="#" target="_blank" rel="noopener">
-                  <span class="service-nom">Taptap Send</span>
-                  <span class="service-desc">Appli mobile, souvent la moins chère</span>
-                  <svg class="ic" aria-hidden="true"><use href="#i-externe"/></svg>
-                </a>
-                <a class="service" id="lien-remitly" href="#" target="_blank" rel="noopener">
-                  <span class="service-nom">Remitly</span>
-                  <span class="service-desc">Appli ou site web</span>
-                  <svg class="ic" aria-hidden="true"><use href="#i-externe"/></svg>
-                </a>
-              </div>
+              <div class="services" id="services"></div>
+              <p class="aide">Une appli bancaire classique (BNP, Crédit Agricole…) ne peut pas envoyer vers Orange Money : passez par une de ces applis.</p>
             </div>
 
             <!-- Coordonnées du bénéficiaire (carte et appli) -->
@@ -179,12 +169,13 @@
                 </button>
               </div>
               <p class="aide">Sur iPhone, tapez <code id="code-ussd">#150*1*1*695225850*6560#</code> puis appelez.</p>
+              <p class="aide"><strong>Depuis votre banque au Cameroun</strong> (Ecobank, UBA…) : dans l'appli bancaire, choisissez un transfert vers un compte Orange Money et saisissez ce numéro.</p>
             </div>
           </li>
 
           <li class="etape">
             <h3><span class="etape-n">3</span>Inscrivez votre nom au tableau</h3>
-            <p class="aide">Dovyl vérifie chaque envoi reçu, puis votre nom s'affiche dans le tableau d'honneur.</p>
+            <p class="aide">Une fois l'argent envoyé, inscrivez-vous : votre nom s'affiche tout de suite dans le tableau d'honneur.</p>
             <form class="formulaire" id="form-declaration" novalidate>
               <label class="champ">
                 <span>Votre nom ou pseudo</span>
@@ -216,7 +207,7 @@
             <div class="merci" id="merci" hidden tabindex="-1">
               <svg class="ic ic-grand" aria-hidden="true"><use href="#i-ok"/></svg>
               <h4>Merci, c'est noté.</h4>
-              <p>Votre nom apparaîtra dès que Dovyl aura reçu l'argent.</p>
+              <p>Votre nom est maintenant dans le tableau d'honneur.</p>
               <a class="btn btn-contour btn-bloc" id="btn-prevenir" href="#" target="_blank" rel="noopener">
                 <svg class="ic" aria-hidden="true"><use href="#i-bulle"/></svg>Prévenir Dovyl
               </a>

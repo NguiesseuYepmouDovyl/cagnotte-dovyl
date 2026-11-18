@@ -36,7 +36,7 @@
     <form class="carte-admin connexion" id="form-connexion">
       <svg class="ic ic-grand" aria-hidden="true"><use href="#i-cadenas"/></svg>
       <h1>Entrer le code admin</h1>
-      <p>Espace réservé à Dovyl pour valider les contributions.</p>
+      <p>Espace réservé à Dovyl pour gérer les contributions.</p>
       <label class="champ">
         <span>Code admin</span>
         <input name="code" type="password" autocomplete="current-password" required>
@@ -49,17 +49,17 @@
   <!-- Tableau de bord -->
   <main class="admin-main" id="vue-admin" hidden>
     <section class="resume" aria-label="Résumé">
-      <div><p>Validé</p><strong id="r-total">0 €</strong></div>
-      <div><p>À vérifier</p><strong id="r-attente">0</strong></div>
+      <div><p>Collecté</p><strong id="r-total">0 €</strong></div>
+      <div><p>Contributions</p><strong id="r-nombre">0</strong></div>
       <div><p>Objectif</p><strong id="r-objectif">0 %</strong></div>
     </section>
 
     <div class="onglets onglets-admin" role="tablist" aria-label="Filtrer les contributions">
-      <button role="tab" aria-selected="true" data-filtre="en_attente" type="button">À vérifier <span id="c-en_attente"></span></button>
-      <button role="tab" aria-selected="false" data-filtre="validee" type="button">Validées <span id="c-validee"></span></button>
-      <button role="tab" aria-selected="false" data-filtre="rejetee" type="button">Refusées <span id="c-rejetee"></span></button>
+      <button role="tab" aria-selected="true" data-filtre="validee" type="button">Comptées <span id="c-validee"></span></button>
+      <button role="tab" aria-selected="false" data-filtre="rejetee" type="button">Retirées <span id="c-rejetee"></span></button>
+      <button role="tab" aria-selected="false" data-filtre="en_attente" type="button" id="onglet-attente" hidden>À vérifier <span id="c-en_attente"></span></button>
     </div>
-    <p class="aide-admin" id="aide-filtre">Compare chaque inscription avec tes SMS Orange Money avant de valider. L'équivalent en FCFA est indiqué, les frais du service de transfert peuvent le réduire un peu.</p>
+    <p class="aide-admin" id="aide-filtre">Chaque inscription compte dès qu'elle est envoyée. Si tu ne retrouves pas l'argent dans tes SMS Orange Money, retire-la du compteur. L'équivalent en FCFA est indiqué, les frais du service de transfert peuvent le réduire un peu.</p>
     <ul class="liste-admin" id="liste"></ul>
     <p class="vide-admin" id="vide" hidden>Rien ici pour le moment.</p>
 
@@ -72,7 +72,7 @@
         </label>
         <label class="champ"><span>Message <em>(facultatif)</em></span><input name="message" maxlength="240"></label>
         <label class="case"><input type="checkbox" name="anonyme"><span>Afficher « Anonyme »</span></label>
-        <button class="btn btn-cobalt btn-bloc" type="submit">Ajouter et valider</button>
+        <button class="btn btn-cobalt btn-bloc" type="submit">Ajouter au compteur</button>
       </form>
     </details>
 
