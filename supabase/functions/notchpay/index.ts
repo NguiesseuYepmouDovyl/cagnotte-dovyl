@@ -20,7 +20,14 @@ const SB_URL = Deno.env.get('SUPABASE_URL')!;
 const SB_SERVICE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
 const SITE = 'https://nguiesseuyepmoudovyl.github.io/cagnotte-dovyl/';
-const ORIGINES_RETOUR = ['https://nguiesseuyepmoudovyl.github.io', 'http://localhost:8765', 'http://127.0.0.1:8765'];
+// Adresses où Notch Pay peut renvoyer le contributeur après paiement (GitHub Pages est bloqué
+// par certains opérateurs camerounais : miroir prévu sur Cloudflare Pages ou Netlify)
+const ORIGINES_RETOUR = [
+  'https://nguiesseuyepmoudovyl.github.io', 'https://cagnotte-dovyl.pages.dev', 'https://cagnotte-dovyl.netlify.app',
+  'http://localhost:8765', 'http://127.0.0.1:8765',
+];
+const origineAutorisee = (o: string) =>
+  ORIGINES_RETOUR.includes(o) || /^https:\/\/[a-z0-9-]+\.cagnotte-dovyl\.pages\.dev$/.test(o);
 const MODE_TEST = NP_CLE_PUBLIQUE.startsWith('pk_test');
 
 const CORS = {
@@ -102,7 +109,7 @@ async function creer(b: Record<string, unknown>) {
   let retour = SITE;
   try {
     const u = new URL(String(b.retour ?? ''));
-    if (ORIGINES_RETOUR.includes(u.origin)) retour = u.origin + u.pathname;
+    if (origineAutorisee(u.origin)) retour = u.origin + u.pathname;
   } catch { /* adresse de retour absente ou invalide : site public */ }
 
   const id: string = await rpc('np_creer', { p_nom: nom, p_anonyme: !!b.anonyme, p_montant: montant, p_message: message, p_moyen: moyen });
