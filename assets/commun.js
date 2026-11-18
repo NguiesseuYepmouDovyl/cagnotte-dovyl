@@ -37,6 +37,23 @@
     : `https://wa.me/237${C.numeroWhatsApp}${texte ? `?text=${encodeURIComponent(texte)}` : ''}`;
   const telLisible = (t) => t.replace(/(\d)(\d{2})(\d{2})(\d{2})(\d{2})/, '$1 $2 $3 $4 $5');
 
+  // Appel de la fonction serveur Notch Pay (Supabase Edge Function « notchpay »)
+  async function paiement(action, donnees) {
+    let rep;
+    try {
+      rep = await fetch(`${C.supabaseUrl}/functions/v1/notchpay`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: C.supabaseCle },
+        body: JSON.stringify({ action, ...(donnees || {}) }),
+      });
+    } catch (e) {
+      throw new Error('Connexion impossible. Vérifiez votre accès internet puis réessayez.');
+    }
+    const data = await rep.json().catch(() => null);
+    if (!rep.ok) throw new Error((data && data.erreur) || 'Le service de paiement ne répond pas, réessayez dans un instant.');
+    return data;
+  }
+
   function echapper(s) {
     return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
@@ -72,5 +89,5 @@
 
   const objectif = () => C.achats.reduce((s, a) => s + a.prix, 0);
 
-  window.Outils = { rpc, fcfa, nombre, eur, versFcfa, lienContact, telLisible, echapper, dateRelative, copier, toast, objectif };
+  window.Outils = { rpc, paiement, fcfa, nombre, eur, versFcfa, lienContact, telLisible, echapper, dateRelative, copier, toast, objectif };
 })();

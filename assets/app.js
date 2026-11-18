@@ -1,14 +1,14 @@
 // Page publique de la Cagnotte Dovyl (montants en euros, stockés en centimes)
 (function () {
   const C = window.CAGNOTTE;
-  const { rpc, fcfa, nombre, eur, versFcfa, lienContact, telLisible, echapper, dateRelative, copier, toast, objectif } = window.Outils;
+  const { rpc, paiement, fcfa, nombre, eur, versFcfa, lienContact, telLisible, echapper, dateRelative, copier, toast, objectif } = window.Outils;
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => document.querySelectorAll(s);
   const reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const OBJECTIF = objectif(); // en euros
 
   let montant = 10;          // euros
-  let moyen = null;          // carte | appli | orange_money
+  let moyen = null;          // carte | appli | mobile
   let contributions = [];
   let ordre = 'montant';
   let scoreAffiche = 0;
@@ -28,7 +28,10 @@
       <svg class="ic" aria-hidden="true"><use href="#i-externe"/></svg>
     </a>`).join('');
   $('#lien-contact-pied').href = lienContact('Salut Dovyl, je viens de voir ta cagnotte PS5 + GTA VI.');
-  if (C.lienCarte) { $('#carte-direct').hidden = false; $('#carte-wu').hidden = true; $('#btn-carte').href = C.lienCarte; }
+  if (C.notchpay && C.notchpay.actif && C.notchpay.moyens.includes('carte')) {
+    // Carte via Notch Pay : le bouton de paiement est celui de l'étape 3
+    $('#carte-direct').hidden = false; $('#carte-wu').hidden = true; $('#btn-carte').hidden = true;
+  } else if (C.lienCarte) { $('#carte-direct').hidden = false; $('#carte-wu').hidden = true; $('#btn-carte').href = C.lienCarte; }
 
   /* ---------- Étape 1 : montant ---------- */
   const zoneMontants = $('#montants');
@@ -57,18 +60,51 @@
     $('#code-ussd').textContent = code;
     const champ = $('#form-declaration').montant;
     if (!champ.dataset.touche) champ.value = m;
+    majMode();
   }
-  choisirMontant(montant);
-  $('#form-declaration').montant.addEventListener('input', (e) => (e.target.dataset.touche = '1'));
+  $('#form-declaration').montant.addEventListener('input', (e) => { e.target.dataset.touche = '1'; majMode(); });
 
   /* ---------- Étape 2 : moyen de paiement ---------- */
   $$('.moyen').forEach((b) => b.addEventListener('click', () => choisirMoyen(b.dataset.moyen)));
   function choisirMoyen(m) {
     moyen = m;
     $$('.moyen').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.moyen === m)));
-    ['carte', 'appli', 'orange_money'].forEach((id) => ($(`#p-${id}`).hidden = id !== m));
-    // Les coordonnées servent aux transferts (pas au lien de paiement direct ni à Orange Money)
-    $('#beneficiaire').hidden = !(m === 'appli' || (m === 'carte' && !C.lienCarte));
+    ['carte', 'appli', 'mobile'].forEach((id) => ($(`#p-${id}`).hidden = id !== m));
+    // Les coordonnées servent aux transferts (pas au lien de paiement direct ni au Mobile Money)
+    $('#beneficiaire').hidden = !(m === 'appli' || (m === 'carte' && !C.lienCarte && !viaNotchPay()));
+    majMode();
+  }
+  $('#om-manuel').addEventListener('toggle', () => {
+    const volet = $('#mobile-np');
+    if (volet) volet.hidden = $('#om-manuel').open;
+    majMode();
+  });
+
+  // Paiement par Notch Pay (vérifié automatiquement) ou simple inscription après un envoi manuel
+  function viaNotchPay(ignorerManuel) {
+    const np = C.notchpay;
+    if (!np || !np.actif || !moyen || !np.moyens.includes(moyen)) return false;
+    return ignorerManuel || !(moyen === 'mobile' && $('#om-manuel').open);
+  }
+  function majMode() {
+    const np = viaNotchPay();
+    const f = $('#form-declaration');
+    $('#champ-contact').hidden = !np;
+    $('#champ-reference').hidden = np;
+    $('#libelle-montant').textContent = np ? 'Montant' : 'Montant envoyé';
+    $('#aide-etape3').textContent = np
+      ? 'Indiquez votre nom et votre numéro Mobile Money, puis payez : votre nom s\'ajoute au tableau dès que le paiement passe.'
+      : 'Une fois l\'argent envoyé, inscrivez-vous : votre nom s\'affiche tout de suite dans le tableau d\'honneur.';
+    const euros = parseFloat(String(f.montant.value).replace(',', '.'));
+    $('#btn-declarer').textContent = np
+      ? `Payer ${euros >= 1 ? eur(euros) : ''} avec ${moyen === 'carte' ? 'ma carte' : 'Mobile Money'}`.replace('  ', ' ')
+      : 'Inscrire ma contribution';
+  }
+  choisirMontant(montant);
+
+  // Pas de Notch Pay configuré : on retire le volet automatique et le choix « à la main » devient la seule option
+  if (!C.notchpay || !C.notchpay.actif || !C.notchpay.moyens.includes('mobile')) {
+    $('#mobile-np').remove(); $('#om-manuel').open = true; $('#om-manuel').classList.add('seul');
   }
 
   document.addEventListener('click', async (e) => {
@@ -211,14 +247,35 @@
     if (centimes > 2000000) return montrerErreur('Ce montant dépasse la limite. Écrivez directement à Dovyl.', form.montant);
 
     const btn = $('#btn-declarer');
+
+    // Paiement Notch Pay : la contribution sera créée par le serveur une fois le paiement confirmé
+    if (viaNotchPay()) {
+      const contact = form.contact.value.trim();
+      if (contact.length < 6) return montrerErreur('Indiquez votre numéro Mobile Money (ex. 690112233) ou un e-mail.', form.contact);
+      if (centimes > 75000) return montrerErreur('Le paiement Mobile Money accepte jusqu\'à 750 €. Pour plus, choisissez un autre moyen.', form.montant);
+      btn.disabled = true; btn.textContent = 'Ouverture de la page de paiement…';
+      try {
+        const r = await paiement('creer', {
+          nom, anonyme: form.anonyme.checked, montant: centimes, message: form.message.value.trim(),
+          contact, moyen, retour: location.origin + location.pathname,
+        });
+        location.href = r.url;
+      } catch (err) {
+        montrerErreur(err.message);
+        btn.disabled = false; majMode();
+      }
+      return;
+    }
+
     btn.disabled = true; btn.textContent = 'Inscription…';
     try {
       await rpc('declarer_contribution', {
         p_nom: nom, p_anonyme: form.anonyme.checked, p_montant: centimes,
-        p_message: form.message.value.trim(), p_reference: form.reference.value.trim(), p_moyen: moyen || 'autre',
+        p_message: form.message.value.trim(), p_reference: form.reference.value.trim(),
+        p_moyen: (moyen === 'mobile' ? 'orange_money' : moyen) || 'autre', // à la main = Orange Money direct
       });
       const ref = form.reference.value.trim();
-      const via = { carte: 'par carte', appli: 'par appli de transfert', orange_money: 'par Orange Money' }[moyen] || '';
+      const via = { carte: 'par carte', appli: 'par appli de transfert', mobile: 'par Orange Money' }[moyen] || '';
       $('#btn-prevenir').href = lienContact(
         `Salut Dovyl, je viens d'envoyer ${eur(centimes / 100)} ${via} pour ta cagnotte PS5 + GTA VI.` +
         `\nPseudo : ${nom}${ref ? `\nRéférence : ${ref}` : ''}`);
@@ -230,9 +287,37 @@
     } catch (err) {
       montrerErreur(err.message);
     } finally {
-      btn.disabled = false; btn.textContent = 'Inscrire ma contribution';
+      btn.disabled = false; majMode();
     }
   });
+
+  /* ---------- Retour de la page de paiement Notch Pay ---------- */
+  (async function retourPaiement() {
+    const params = new URLSearchParams(location.search.replace(/\?/g, '&'));
+    if (params.get('paiement') !== 'retour') return;
+    const id = params.get('id') || params.get('trxref');
+    const reference = params.get('reference');
+    history.replaceState(null, '', location.pathname + location.hash);
+    const boite = $('#retour-paiement');
+    const afficher = (classe, html) => {
+      boite.className = `retour-paiement ${classe}`; boite.innerHTML = html; boite.hidden = false;
+      boite.scrollIntoView({ block: 'center' }); boite.focus({ preventScroll: true });
+    };
+    afficher('attente', '<p><strong>Vérification du paiement…</strong></p><p>Quelques secondes, le temps que Notch Pay confirme.</p>');
+    let r = { statut: 'en_cours' };
+    for (let essai = 0; essai < 8 && r.statut === 'en_cours'; essai++) {
+      if (essai) await new Promise((ok) => setTimeout(ok, 3000));
+      try { r = await paiement('verifier', { id, reference }); } catch (e) { r = { statut: 'en_cours' }; }
+    }
+    if (r.statut === 'complete') {
+      afficher('ok', `<p><strong>Merci ${echapper(r.nom)}, paiement reçu !</strong></p><p>${eur(r.montant / 100)} ajoutés à la cagnotte, votre nom est dans le tableau d'honneur.</p>`);
+      charger();
+    } else if (r.statut === 'echoue') {
+      afficher('erreur', '<p><strong>Le paiement n\'a pas abouti.</strong></p><p>Aucun montant n\'a été prélevé. Vous pouvez réessayer ci-dessous.</p>');
+    } else {
+      afficher('attente', '<p><strong>Paiement en cours de confirmation.</strong></p><p>Si vous avez validé sur votre téléphone, votre nom apparaîtra dans quelques minutes.</p>');
+    }
+  })();
 
   $('#nouvelle-declaration').addEventListener('click', () => {
     form.reset(); delete form.montant.dataset.touche; choisirMontant(montant);

@@ -1,7 +1,7 @@
 // Espace Dovyl : les inscriptions comptent d'office, Dovyl retire ou supprime les fausses
 (function () {
-  const { rpc, fcfa, nombre, eur, versFcfa, echapper, dateRelative, toast, objectif } = window.Outils;
-  const MOYENS = { carte: 'Carte bancaire', appli: 'Appli de transfert', orange_money: 'Orange Money', autre: 'Autre' };
+  const { rpc, paiement, fcfa, nombre, eur, versFcfa, echapper, dateRelative, toast, objectif } = window.Outils;
+  const MOYENS = { carte: 'Carte bancaire', appli: 'Appli de transfert', orange_money: 'Orange Money', mobile: 'Mobile Money', autre: 'Autre' };
   const $ = (s) => document.querySelector(s);
   const CLE = 'cagnotte-code';
 
@@ -22,6 +22,8 @@
     const ok = await rpc('admin_connexion', { p_code: c });
     if (!ok) return false;
     code = c; ecrire(c); afficherAdmin(true);
+    // Rattrape les paiements Notch Pay dont le contributeur a fermé la page avant le retour
+    await paiement('rattraper').catch(() => null);
     await charger();
     return true;
   }
@@ -88,6 +90,7 @@
           ${c.moyen ? `<span>${MOYENS[c.moyen] || ''}</span>` : ''}
           ${c.reference ? `<span>Réf. <code>${echapper(c.reference)}</code></span>` : '<span>Pas de référence</span>'}
           ${c.source === 'admin' ? '<span>Ajoutée par toi</span>' : ''}
+          ${c.source === 'notchpay' ? '<span class="verifie">Payé via Notch Pay, vérifié</span>' : ''}
         </span>
         ${c.message ? `<p class="contrib-msg">« ${echapper(c.message)} »</p>` : ''}
         <div class="contrib-actions">${actions}</div>

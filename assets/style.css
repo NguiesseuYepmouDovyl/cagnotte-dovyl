@@ -319,6 +319,32 @@ code { font: 700 .95em ui-monospace, Consolas, monospace; background: var(--pale
 
 .panneau { margin-top: 18px; }
 .panneau-intro { margin: 0 0 12px; }
+
+/* Mobile Money via Notch Pay */
+.pastille-verifie {
+  display: inline-flex; align-items: center; gap: 6px; margin: 0; padding: 6px 12px; border-radius: 999px;
+  background: #E7F7EF; color: var(--ok); font-weight: 700; font-size: .9rem;
+}
+.pastille-verifie .ic { width: 16px; height: 16px; }
+.manuel { margin-top: 16px; border: 1.5px solid var(--pale); border-radius: 14px; background: var(--blanc); }
+.manuel > summary {
+  padding: 12px 14px; cursor: pointer; font-weight: 700; color: var(--cobalt); list-style: none;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+}
+.manuel > summary::-webkit-details-marker { display: none; }
+.manuel > summary::after { content: '+'; font: 800 1.4rem/1 var(--f-titre); }
+.manuel[open] > summary::after { content: '−'; }
+.manuel-contenu { padding: 0 14px 14px; }
+.manuel.seul { border: 0; background: none; }
+.manuel.seul > summary { display: none; }
+.manuel.seul .manuel-contenu { padding: 0; }
+
+.retour-paiement { margin: 14px 0 4px; padding: 14px 16px; border-radius: 14px; border-left: 5px solid var(--cobalt); background: var(--pale); }
+.retour-paiement:focus { outline: none; }
+.retour-paiement p { margin: 0; }
+.retour-paiement p + p { margin-top: 4px; font-size: .95rem; }
+.retour-paiement.ok { border-left-color: var(--ok); background: #E7F7EF; }
+.retour-paiement.erreur { border-left-color: var(--erreur); background: #FDECEC; color: var(--encre); font-weight: 400; }
 .mini-etapes { margin: 0 0 16px; padding-left: 1.3em; display: grid; gap: 6px; }
 .mini-etapes li::marker { font-weight: 700; color: var(--cobalt); }
 

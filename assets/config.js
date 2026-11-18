@@ -5,8 +5,13 @@ window.CAGNOTTE = {
   // Nom exact du titulaire du compte Orange Money (demandé par les services de transfert)
   nomBeneficiaire: 'Nguiesseu Yepmou Dovyl',
 
-  // Paiement par carte direct sur le site : coller ici un lien de paiement Notch Pay
-  // (ex. 'https://pay.notchpay.co/xxxx'). Laisser vide tant que le compte n'existe pas.
+  // Paiements vérifiés automatiquement par Notch Pay (fonction Supabase « notchpay »).
+  // moyens : 'mobile' = Orange Money / MTN MoMo. Ajouter 'carte' quand Notch Pay aura activé
+  // la carte bancaire sur le compte (canal « card » encore inactif au 18/11/2026).
+  // La clé Notch Pay (sandbox ou production) se règle dans la fonction, pas ici.
+  notchpay: { actif: true, moyens: ['mobile'] },
+
+  // Ancienne option, inutile avec Notch Pay ci-dessus : lien de paiement fixe pour la carte.
   lienCarte: '',
 
   // Contact. Si un pseudo Telegram est renseigné (sans @), il remplace WhatsApp.

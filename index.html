@@ -102,10 +102,10 @@
                 <span class="moyen-nom">Appli de transfert</span>
                 <span class="moyen-desc">Revolut, Taptap Send…</span>
               </button>
-              <button type="button" class="moyen" role="radio" aria-checked="false" data-moyen="orange_money">
+              <button type="button" class="moyen" role="radio" aria-checked="false" data-moyen="mobile">
                 <svg class="ic" aria-hidden="true"><use href="#i-tel"/></svg>
-                <span class="moyen-nom">Orange Money</span>
-                <span class="moyen-desc">Cameroun ou banque</span>
+                <span class="moyen-nom">Mobile Money</span>
+                <span class="moyen-desc">Orange, MTN</span>
               </button>
             </div>
 
@@ -152,8 +152,16 @@
               <p class="aide">Les frais du service (souvent 1 à 3 €) s'ajoutent au montant.</p>
             </div>
 
-            <!-- Orange Money -->
-            <div class="panneau" id="p-orange_money" hidden>
+            <!-- Mobile Money : Notch Pay (vérifié automatiquement) ou à la main -->
+            <div class="panneau" id="p-mobile" hidden>
+              <div id="mobile-np">
+                <p class="panneau-intro">Payez avec <strong>Orange Money</strong> ou <strong>MTN MoMo</strong> sur la page sécurisée de Notch Pay. Votre nom s'ajoute tout seul au tableau d'honneur dès que le paiement passe.</p>
+                <p class="pastille-verifie"><svg class="ic" aria-hidden="true"><use href="#i-ok"/></svg>Paiement vérifié automatiquement</p>
+                <p class="aide">Remplissez l'étape 3, puis validez le paiement sur votre téléphone.</p>
+              </div>
+              <details class="manuel" id="om-manuel">
+                <summary>Payer à la main, sans Notch Pay (Orange Money ou banque)</summary>
+                <div class="manuel-contenu">
               <a class="btn btn-orange btn-grand btn-bloc" id="btn-ussd" href="#">
                 <svg class="ic" aria-hidden="true"><use href="#i-tel"/></svg>
                 <span id="btn-ussd-texte">Envoyer 6 560 FCFA</span>
@@ -170,19 +178,27 @@
               </div>
               <p class="aide">Sur iPhone, tapez <code id="code-ussd">#150*1*1*695225850*6560#</code> puis appelez.</p>
               <p class="aide"><strong>Depuis votre banque au Cameroun</strong> (Ecobank, UBA…) : dans l'appli bancaire, choisissez un transfert vers un compte Orange Money et saisissez ce numéro.</p>
+              <p class="aide">Puis inscrivez votre nom à l'étape 3.</p>
+                </div>
+              </details>
             </div>
           </li>
 
           <li class="etape">
             <h3><span class="etape-n">3</span>Inscrivez votre nom au tableau</h3>
-            <p class="aide">Une fois l'argent envoyé, inscrivez-vous : votre nom s'affiche tout de suite dans le tableau d'honneur.</p>
+            <p class="aide" id="aide-etape3">Une fois l'argent envoyé, inscrivez-vous : votre nom s'affiche tout de suite dans le tableau d'honneur.</p>
+            <div class="retour-paiement" id="retour-paiement" hidden role="status" tabindex="-1"></div>
             <form class="formulaire" id="form-declaration" novalidate>
               <label class="champ">
                 <span>Votre nom ou pseudo</span>
                 <input name="nom" maxlength="40" autocomplete="nickname" required placeholder="Ex. @kevin_dev">
               </label>
+              <label class="champ" id="champ-contact" hidden>
+                <span>Numéro Mobile Money <em>(ou e-mail)</em></span>
+                <input name="contact" inputmode="tel" autocomplete="tel" maxlength="120" placeholder="Ex. 690112233">
+              </label>
               <label class="champ">
-                <span>Montant envoyé</span>
+                <span id="libelle-montant">Montant envoyé</span>
                 <span class="champ-avec-unite">
                   <input name="montant" type="number" inputmode="decimal" min="1" step="0.01" required placeholder="10">
                   <span>€</span>
@@ -192,7 +208,7 @@
                 <span>Un mot pour Dovyl <em>(facultatif)</em></span>
                 <textarea name="message" maxlength="240" rows="3" placeholder="Ex. Je veux une revanche en ligne."></textarea>
               </label>
-              <label class="champ">
+              <label class="champ" id="champ-reference">
                 <span>Référence du transfert <em>(facultatif)</em></span>
                 <input name="reference" maxlength="40" placeholder="Ex. numéro de suivi Western Union">
               </label>
