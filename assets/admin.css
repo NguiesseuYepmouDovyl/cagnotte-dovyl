@@ -1,0 +1,43 @@
+/* Espace Dovyl — gestion de la cagnotte */
+body.admin { background: var(--pale); min-height: 100vh; }
+.admin-main { max-width: 720px; margin: 0 auto; padding: 24px var(--gouttiere) 60px; display: grid; gap: 16px; }
+
+.carte-admin { background: var(--blanc); border: 2px solid var(--encre); border-radius: 18px; padding: 20px 18px; }
+.connexion { margin-top: 6vh; display: grid; gap: 14px; }
+.connexion .ic-grand { color: var(--cobalt); }
+.connexion h1 { margin: 0; font: 900 2.2rem/1 var(--f-titre); }
+.connexion p { margin: 0; color: var(--encre-douce); }
+
+.resume { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.resume div { background: var(--cobalt); color: var(--blanc); border-radius: 14px; padding: 12px; }
+.resume p { margin: 0; font-size: .8rem; color: rgba(255,255,255,.75); }
+.resume strong { display: block; margin-top: 4px; font: 800 1.3rem/1.05 var(--f-titre); color: var(--citron); overflow-wrap: anywhere; }
+
+.onglets-admin { background: var(--encre); margin: 0; display: flex; flex-wrap: wrap; }
+.onglets-admin span { opacity: .75; font-weight: 400; }
+.aide-admin { margin: 0; font-size: .92rem; color: var(--encre-douce); }
+
+.liste-admin { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.contrib {
+  background: var(--blanc); border-radius: 14px; padding: 14px 16px;
+  display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: baseline;
+  border-left: 6px solid var(--orange);
+}
+.contrib.validee { border-left-color: var(--ok); }
+.contrib.rejetee { border-left-color: #A9A7C9; }
+.contrib-nom { font-weight: 700; font-size: 1.05rem; overflow-wrap: anywhere; }
+.contrib-montant { font: 800 1.5rem/1 var(--f-titre); white-space: nowrap; }
+.contrib-infos { grid-column: 1 / -1; font-size: .88rem; color: var(--encre-douce); display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.contrib-infos code { font-size: .85rem; }
+.contrib-msg { grid-column: 1 / -1; margin: 4px 0 0; font-size: .95rem; }
+.contrib-actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.contrib-actions .btn { flex: 1 1 auto; }
+.btn-valider { background: var(--ok); color: var(--blanc); }
+.btn-valider:hover { background: #0E7A50; }
+.btn-refuser { background: var(--blanc); color: var(--erreur); border-color: var(--erreur); }
+.btn-discret { background: var(--papier); color: var(--encre); border-color: #CFCDEA; }
+
+.vide-admin { margin: 0; padding: 20px; border: 2px dashed #B9B7DB; border-radius: 14px; text-align: center; color: var(--encre-douce); }
+
+.repliable summary { cursor: pointer; font-weight: 700; padding: 2px 0; }
+.repliable[open] summary { margin-bottom: 4px; }

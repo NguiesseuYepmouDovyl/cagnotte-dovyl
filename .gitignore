@@ -1,0 +1,9 @@
+CODE-ADMIN.txt
+.claude/
+CLAUDE.md
+AGENTS.md
+.env
+node_modules/
+dist/
+runtime/
+*.local.json

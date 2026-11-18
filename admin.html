@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Espace Dovyl</title>
+  <meta name="theme-color" content="#111A86">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rethink+Sans:wght@400;600;700&family=Big+Shoulders+Display:wght@600;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/admin.css">
+</head>
+<body class="admin">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-manette" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M7.5 7h9a5 5 0 0 1 4.9 4l.9 4.6a2.6 2.6 0 0 1-4.6 2.1L16 15.5H8l-1.7 2.2a2.6 2.6 0 0 1-4.6-2.1L2.6 11a5 5 0 0 1 4.9-4ZM7.5 10v3M6 11.5h3"/><circle cx="16" cy="10.6" r="1" fill="currentColor"/><circle cx="17.8" cy="12.6" r="1" fill="currentColor"/></symbol>
+    <symbol id="i-cadenas" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3"/></symbol>
+    <symbol id="i-ok" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-non" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="m6.5 6.5 11 11M17.5 6.5l-11 11"/></symbol>
+    <symbol id="i-retour" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M9 7 4.5 11.5 9 16M5 11.5h9a5 5 0 0 1 0 10h-2"/></symbol>
+    <symbol id="i-corbeille" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M4.5 6.5h15M9.5 6.5V4h5v2.5M6.5 6.5l1 14h9l1-14M10 10.5v6M14 10.5v6"/></symbol>
+  </svg>
+
+  <header class="barre">
+    <a class="marque" href="./" aria-label="Retour à la cagnotte">
+      <svg class="ic" aria-hidden="true"><use href="#i-manette"/></svg>
+      <span>Espace Dovyl</span>
+    </a>
+    <button class="btn btn-fantome btn-petit" type="button" id="deconnexion" hidden>Se déconnecter</button>
+  </header>
+
+  <!-- Connexion -->
+  <main class="admin-main" id="vue-connexion">
+    <form class="carte-admin connexion" id="form-connexion">
+      <svg class="ic ic-grand" aria-hidden="true"><use href="#i-cadenas"/></svg>
+      <h1>Entrer le code admin</h1>
+      <p>Espace réservé à Dovyl pour valider les contributions.</p>
+      <label class="champ">
+        <span>Code admin</span>
+        <input name="code" type="password" autocomplete="current-password" required>
+      </label>
+      <p class="erreur" id="erreur-connexion" role="alert" hidden></p>
+      <button class="btn btn-cobalt btn-grand btn-bloc" type="submit">Ouvrir l'espace</button>
+    </form>
+  </main>
+
+  <!-- Tableau de bord -->
+  <main class="admin-main" id="vue-admin" hidden>
+    <section class="resume" aria-label="Résumé">
+      <div><p>Validé</p><strong id="r-total">0 €</strong></div>
+      <div><p>À vérifier</p><strong id="r-attente">0</strong></div>
+      <div><p>Objectif</p><strong id="r-objectif">0 %</strong></div>
+    </section>
+
+    <div class="onglets onglets-admin" role="tablist" aria-label="Filtrer les contributions">
+      <button role="tab" aria-selected="true" data-filtre="en_attente" type="button">À vérifier <span id="c-en_attente"></span></button>
+      <button role="tab" aria-selected="false" data-filtre="validee" type="button">Validées <span id="c-validee"></span></button>
+      <button role="tab" aria-selected="false" data-filtre="rejetee" type="button">Refusées <span id="c-rejetee"></span></button>
+    </div>
+    <p class="aide-admin" id="aide-filtre">Compare chaque inscription avec tes SMS Orange Money avant de valider. L'équivalent en FCFA est indiqué, les frais du service de transfert peuvent le réduire un peu.</p>
+    <ul class="liste-admin" id="liste"></ul>
+    <p class="vide-admin" id="vide" hidden>Rien ici pour le moment.</p>
+
+    <details class="carte-admin repliable">
+      <summary>Ajouter une contribution reçue autrement (PayPal d'un ami, espèces…)</summary>
+      <form class="formulaire" id="form-ajout">
+        <label class="champ"><span>Nom</span><input name="nom" maxlength="40" required></label>
+        <label class="champ"><span>Montant</span>
+          <span class="champ-avec-unite"><input name="montant" type="number" inputmode="decimal" min="1" step="0.01" required><span>€</span></span>
+        </label>
+        <label class="champ"><span>Message <em>(facultatif)</em></span><input name="message" maxlength="240"></label>
+        <label class="case"><input type="checkbox" name="anonyme"><span>Afficher « Anonyme »</span></label>
+        <button class="btn btn-cobalt btn-bloc" type="submit">Ajouter et valider</button>
+      </form>
+    </details>
+
+    <details class="carte-admin repliable">
+      <summary>Changer le code admin</summary>
+      <form class="formulaire" id="form-code">
+        <label class="champ"><span>Nouveau code (8 caractères minimum)</span><input name="nouveau" type="password" minlength="8" autocomplete="new-password" required></label>
+        <label class="champ"><span>Confirmer le nouveau code</span><input name="confirmation" type="password" minlength="8" autocomplete="new-password" required></label>
+        <button class="btn btn-contour btn-bloc" type="submit">Changer le code</button>
+      </form>
+    </details>
+  </main>
+
+  <script src="assets/config.js"></script>
+  <script src="assets/commun.js"></script>
+  <script src="assets/admin.js"></script>
+</body>
+</html>
